@@ -1,17 +1,14 @@
-FROM alpine:edge
+FROM alpine:3.18
 
-# نصب ابزارهای مورد نیاز
 RUN apk update && \
-    apk add --no-cache \
-    bash curl unzip tor wget caddy sed busybox ca-certificates
+    apk add --no-cache wget unzip curl sed tor caddy bash && \
+    wget https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip && \
+    unzip Xray-linux-64.zip && \
+    mv xray /usr/local/bin/xray && \
+    chmod +x /usr/local/bin/xray && \
+    rm -rf Xray-linux-64.zip geosite.dat geoip.dat
 
-# نصب Xray
-RUN wget -O xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip && \
-    unzip -q xray.zip && \
-    mv xray /xray && chmod +x /xray && rm -rf xray.zip
-
-# کپی اسکریپت شروع
-ADD start.sh /start.sh
+COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-CMD ["/start.sh"]
+CMD ["/bin/sh", "/start.sh"]
